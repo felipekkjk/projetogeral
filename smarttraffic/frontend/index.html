@@ -1,1 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartTraffic - Mobilidade Inteligente</title>
+    
+    <!-- Meta tags SEO -->
+    <meta name="description" content="Sistema inteligente de monitoramento de trânsito em tempo real com IA e GPS">
+    <meta name="keywords" content="trânsito, mobilidade, smart city, GPS, IA, rotas">
+    
+    <!-- CSS da Aplicação -->
+    <link rel="stylesheet" href="css/style.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Leaflet.js (Mapas) CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <!-- Font Awesome (Ícones) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
 
+    <!-- NAVEGAÇÃO / HEADER -->
+    <header class="header">
+        <nav class="navbar">
+            <div class="logo">
+                <i class="fas fa-traffic-light"></i>
+                <span>SmartTraffic</span>
+            </div>
+            
+            <div class="nav-links" id="navLinks">
+                <a href="#dashboard" class="active"><i class="fas fa-chart-line"></i> Dashboard</a>
+                <a href="#map"><i class="fas fa-map"></i> Mapa</a>
+                <a href="#routes"><i class="fas fa-route"></i> Rotas</a>
+                <a href="#reports"><i class="fas fa-file-alt"></i> Relatórios</a>
+            </div>
+            
+            <div class="nav-actions">
+                <button id="refreshBtn" class="btn btn-primary">
+                    <i class="fas fa-sync-alt"></i> Atualizar
+                </button>
+                <button id="themeToggle" class="btn btn-secondary">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="main-content">
+        
+        <!-- SEÇÃO: DASHBOARD -->
+        <section id="dashboard" class="container">
+            <div class="section-header">
+                <h2><i class="fas fa-chart-pie"></i> Painel de Controle</h2>
+                <p>Dados em tempo real do trânsito na sua região</p>
+            </div>
+
+            <!-- Cards de Estatísticas -->
+            <div class="stats-grid">
+                <!-- Card 1: Tempo Médio -->
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: #667eea;">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Tempo Médio</h3>
+                        <p class="stat-value" id="avgTime">42 min</p>
+                        <span class="stat-trend down">
+                            <i class="fas fa-arrow-down"></i> 8%
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Card 2: Congestionamento -->
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: #f7971e;">
+                        <i class="fas fa-car-crash"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Congestionamento</h3>
+                        <p class="stat-value" id="congestionLevel">68%</p>
+                        <span class="stat-trend up">
+                            <i class="fas fa-arrow-up"></i> 12%
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Card 3: Incidentes Ativos -->
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: #e53e3e;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Incidentes Ativos</h3>
+                        <p class="stat-value" id="incidentsCount">14</p>
+                        <span class="stat-trend down">
+                            <i class="fas fa-arrow-down"></i> 2
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Card 4: Velocidade Média -->
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: #38a169;">
+                        <i class="fas fa-tachometer-alt"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Velocidade Média</h3>
+                        <p class="stat-value" id="avgSpeed">24 km/h</p>
+                        <span class="stat-trend up">
+                            <i class="fas fa-arrow-up"></i> 5%
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO: MAPA EM TEMPO REAL -->
+        <section id="map-section" class="container margin-top">
+            <div class="section-header">
+                <h2><i class="fas fa-map-marked-alt"></i> Monitoramento do Fluxo</h2>
+                <p>Acompanhe retenções e incidentes com dados do GPS</p>
+            </div>
+            <div id="map"></div>
+        </section>
+
+        <!-- SEÇÃO: CALCULADORA DE ROTAS -->
+        <section id="routes" class="container margin-top">
+            <div class="section-header">
+                <h2><i class="fas fa-route"></i> Rotas Inteligentes</h2>
+                <p>Encontre o caminho mais ágil com auxílio da nossa IA</p>
+            </div>
+            
+            <div class="route-box">
+                <form id="routeForm" class="route-form">
+                    <div class="form-group">
+                        <label for="origin"><i class="fas fa-map-marker-alt"></i> Origem</label>
+                        <input type="text" id="origin" placeholder="Ex: Ponto A ou Sua Localização" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="destination"><i class="fas fa-flag-checkered"></i> Destino</label>
+                        <input type="text" id="destination" placeholder="Ex: Av. Paulista, 1000" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary full-width">
+                        <i class="fas fa-search-location"></i> Calcular Rota
+                    </button>
+                </form>
+                
+                <div id="routeResults" class="route-results hidden">
+                    <!-- Resultados via JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO: RELATÓRIOS E PITCH -->
+        <section id="reports" class="container margin-top margin-bottom">
+            <div class="section-header">
+                <h2><i class="fas fa-file-alt"></i> Diagnóstico e Visão do Projeto</h2>
+            </div>
+
+            <div class="info-grid">
+                <!-- Card Análise de Dados -->
+                <div class="info-card">
+                    <h3><i class="fas fa-chart-line"></i> Análise de dados – Trânsito intenso</h3>
+                    <p>
+                        O trânsito intenso é um problema causado principalmente pelo grande número de veículos nas ruas, acidentes e falta de organização do fluxo. Isso aumenta o tempo de deslocamento e pode causar atrasos e estresse. A tecnologia pode ajudar usando GPS, sensores e inteligência artificial para identificar congestionamentos em tempo real, melhorar os semáforos e indicar rotas alternativas.
+                    </p>
+                </div>
+
+                <!-- Card Pitch -->
+                <div class="info-card Highlight">
+                    <h3><i class="fas fa-lightbulb"></i> Pitch de Valor</h3>
+                    <p>
+                        Todos os dias, muitas pessoas perdem tempo no trânsito. Nossa ideia é criar um sistema inteligente que use GPS, sensores e inteligência artificial para acompanhar o trânsito em tempo real. O sistema identificaria congestionamentos, sugeriria rotas alternativas e ajudaria a controlar os semáforos. Assim, seria possível diminuir os congestionamentos, economizar tempo e melhorar a mobilidade nas cidades.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <p>&copy; 2026 SmartTraffic. Desenvolvido para cidades inteligentes.</p>
+    </footer>
+
+    <!-- Scripts JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/map.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
